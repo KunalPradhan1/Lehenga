@@ -68,11 +68,12 @@ const Filter = () => {
           className="py-2 px-4 rounded-2xl text-xs font-medium bg-white ring-1 ring-gray-400"
           onChange={handleFilterChange}
         >
-          <option>Sort By</option>
-          <option value="asc price">Price (low to high)</option>
-          <option value="desc price">Price (high to low)</option>
-          <option value="asc lastUpdated">Newest</option>
-          <option value="desc lastUpdated">Oldest</option>
+          <option value="">Sort By</option>
+<option value="price:asc">Price (low to high)</option>
+<option value="price:desc">Price (high to low)</option>
+<option value="lastUpdated:desc">Newest</option>
+<option value="lastUpdated:asc">Oldest</option>
+
         </select>
       </div>
     </div>

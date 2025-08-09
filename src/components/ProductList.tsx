@@ -5,7 +5,7 @@ import Link from "next/link";
 import DOMPurify from "isomorphic-dompurify";
 import Pagination from "./Pagination";
 
-const PRODUCT_PER_PAGE = 20;
+const PRODUCT_PER_PAGE = 8;
 
 const ProductList = async ({
   categoryId,
@@ -21,7 +21,7 @@ const ProductList = async ({
   const productQuery = wixClient.products
     .queryProducts()
     .startsWith("name", searchParams?.name || "")
-    .eq("collectionIds", categoryId)
+    //.eq("collectionIds", categoryId)
     .hasSome(
       "productType",
       searchParams?.type ? [searchParams.type] : ["physical", "digital"]
@@ -34,33 +34,26 @@ const ProductList = async ({
         ? parseInt(searchParams.page) * (limit || PRODUCT_PER_PAGE)
         : 0
     );
+    if (categoryId && categoryId !== "00000000-0000-0000-0000-000000000000") {
+  productQuery.eq("collectionIds", categoryId);
+}
   // .find();
+  
 
   if (searchParams?.sort) {
-  const [sortType, sortBy] = searchParams.sort.split(" ");
+    const [sortType, sortBy] = searchParams.sort.split(" ");
+
+    if (sortType === "asc") {
+      productQuery.ascending(sortBy);
+    }
+    if (sortType === "desc") {
+      productQuery.descending(sortBy);
+    }
+  }
+
+  const res = await productQuery.find();
+
   
-  console.log("Sort parameters:", { sortType, sortBy, fullSort: searchParams.sort });
-
-  let sortField = sortBy;
-  if (sortBy === "price") {
-    sortField = "priceData.price";
-  }
-  
-  console.log("Using sort field:", sortField);
-
-  if (sortType === "asc") {
-    productQuery.ascending(sortField);
-    console.log("Sorting ascending by:", sortField);
-  }
-  if (sortType === "desc") {
-    productQuery.descending(sortField);
-    console.log("Sorting descending by:", sortField);
-  }
-}
-
-const res = await productQuery.find();
-console.log("Products returned:", res.items.map(p => ({ name: p.name, price: p.price?.price })));
- // const res = await productQuery.find();
 
   return (
     <div className="mt-12 flex gap-x-8 gap-y-16 justify-between flex-wrap">
@@ -109,13 +102,7 @@ console.log("Products returned:", res.items.map(p => ({ name: p.name, price: p.p
           </button>
         </Link>
       ))}
-      {searchParams?.cat || searchParams?.name ? (
-        <Pagination
-          currentPage={res.currentPage || 0}
-          hasPrev={res.hasPrev()}
-          hasNext={res.hasNext()}
-        />
-      ) : null}
+      {searchParams?.cat || searchParams?.name ? <Pagination currentPage={res.currentPage || 0} hasPrev={res.hasPrev()} hasNext={res.hasNext()}/> : null}
     </div>
   );
 };
