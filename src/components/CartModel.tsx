@@ -80,7 +80,14 @@ const CartModel = () => {
                 <div className="">
                     <div className="flex items-center justify-between font-semibold">
                         <span className="">Subtotal</span>
-                        <span className="">${cart.subtotal.amount}</span>
+                        <span className="">
+  ${cart.lineItems?.reduce(
+    (sum, item) =>
+      Number(sum) +
+      (Number(item.price?.amount) * Number(item.quantity ?? 1)),
+    0
+  )}
+</span>
                     </div>
                     <p className="text-gray-500 text-sm mt-2 mb-4">
                         Shipping and Taxes calculated at checkout.
